@@ -830,7 +830,7 @@ a{
     height: 60px; /* Adjusted height */
     padding: 5px; /* adjust the height as needed */
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
   align-items: center;
     padding: 5px;
     background-color: #000000;
