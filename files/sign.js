@@ -85,7 +85,7 @@ signInForm.addEventListener('submit', (e) => {
             signInStatus.textContent = 'Sign in successful'; // Display success message
             signInStatus.style.color = 'green'; // Optionally, set style for success
             // Redirect to the desired page after successful sign-in
-            window.location.href = 'http://127.0.0.1:5500/index.html';
+            window.location.href = 'https://akerm1.github.io/voy/';
         })
         .catch((error) => {
             console.error(error.message);
