@@ -958,10 +958,9 @@ a{
     width: 100%;
     margin-top: 0;
     display: flex;
-    justify-content: left;
+    justify-content: center;
     align-items: center;
     background-color:transparent;
-    padding: 5px 20px;
     z-index: 90;
     max-width: 480px;
   }
@@ -1374,16 +1373,39 @@ a{
 
   @media only screen and (max-width: 366px) {
     .product-card {
-      width: 100px; /* Adjusted width */
-      height: 100px;
+      width: 120px; /* Adjusted width */
+      height: 220px;
       background-color: #f2f2f2;
       border-radius: 40px;
       overflow: hidden;
-    
       transition: transform 0.3s ease-in-out;
-      margin: 2px;
+      margin: 7px;
       display: flex;
       flex-direction: column;
       z-index: 2;
+    }
+
+    .section-title1{
+      margin-top: 80px;
+    }
+
+
+    #game{
+     margin-top: -50px;
+    }
+
+    .category-bar{
+      position: relative;
+      top: 70px; /* adjust the top position as needed */
+    
+      width: 100%;
+      margin-top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color:transparent;
+      z-index: 90;
+
+
     }
   }
