@@ -1369,3 +1369,21 @@ a{
   
   
   }
+
+
+
+  @media only screen and (max-width: 366px) {
+    .product-card {
+      width: 100px; /* Adjusted width */
+      height: 100px;
+      background-color: #f2f2f2;
+      border-radius: 40px;
+      overflow: hidden;
+    
+      transition: transform 0.3s ease-in-out;
+      margin: 2px;
+      display: flex;
+      flex-direction: column;
+      z-index: 2;
+    }
+  }
