@@ -1229,6 +1229,9 @@ a{
   #works1{
     display: none;
   }
+  #works3{
+    display: none;
+  }
   
   .registration{
     display: flex;
