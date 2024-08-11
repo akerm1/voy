@@ -130,7 +130,7 @@ margin: 3px  ;
 }
 
 .main-header {
-position: fixed   ;
+position: relative   ;
   top: 0;
   left: 0;
   width: 100%;
@@ -154,6 +154,8 @@ align-items: center;
 
 .logo {
   width: 100px; /* Adjust as needed */
+  border-radius: 50%;
+
 }
 
 
