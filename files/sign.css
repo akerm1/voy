@@ -22,8 +22,6 @@ width: 106px;
 align-items: center;
 justify-content: center;
 display: flex;
-position: relative;
-
 border-radius: 22px;
 
 }
@@ -196,3 +194,14 @@ button.ghost {
 .container.right-panel-active .overlay-right {
   transform: translateX(20%);
 }
+
+.google-signin {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.google-signin img {
+  width: 200px;
+  cursor: pointer;
+}
+

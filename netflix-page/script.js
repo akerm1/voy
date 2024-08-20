@@ -1,58 +1,146 @@
-console.clear();
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+import { getFirestore, doc, setDoc, serverTimestamp, collection } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
 
-const cardsContainer = document.querySelector(".cards");
-const cardsContainerInner = document.querySelector(".cards__inner");
-const cards = Array.from(document.querySelectorAll(".card"));
-const overlay = document.querySelector(".overlay");
-
-const applyOverlayMask = (e) => {
-  const overlayEl = e.currentTarget;
-  const x = e.pageX - cardsContainer.offsetLeft;
-  const y = e.pageY - cardsContainer.offsetTop;
-
-  overlayEl.style = `--opacity: 1; --x: ${x}px; --y:${y}px;`;
+const firebaseConfig = {
+  apiKey: "AIzaSyBNTDHR67L48F1nPReRs2dSoQ-PxgNKWYM",
+  authDomain: "login2-d485e.firebaseapp.com",
+  projectId: "login2-d485e",
+  storageBucket: "login2-d485e.appspot.com",
+  messagingSenderId: "602998933832",
+  appId: "1:602998933832:web:a397944522901f3c12cb7d"
 };
 
-const createOverlayCta = (overlayCard, ctaEl) => {
-  const overlayCta = document.createElement("div");
-  overlayCta.classList.add("cta");
-  overlayCta.textContent = ctaEl.textContent;
-  overlayCta.setAttribute("aria-hidden", true);
-  overlayCard.append(overlayCta);
-};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-const observer = new ResizeObserver((entries) => {
-  entries.forEach((entry) => {
-    const cardIndex = cards.indexOf(entry.target);
-    let width = entry.borderBoxSize[0].inlineSize;
-    let height = entry.borderBoxSize[0].blockSize;
+window.openPopup = function(event, payLink, baridiMobLink, usdtLink) {
+  event.preventDefault();
+  const product = event.target.closest('.card').dataset.product;
+  const price = event.target.closest('.card').dataset.price;
+  window.currentProduct = product;
+  window.currentPrice = price;
+  window.currentPayLink = payLink;
+  window.currentBaridiMobLink = baridiMobLink;
+  window.currentUsdtLink = usdtLink;
 
-    if (cardIndex >= 0) {
-      overlay.children[cardIndex].style.width = `${width}px`;
-      overlay.children[cardIndex].style.height = `${height}px`;
+  const popup = document.getElementById('payment-popup');
+  if (popup) {
+    const priceDisplay = document.getElementById('price-display');
+    if (priceDisplay) {
+      priceDisplay.textContent = `Price: ${price}`;
     }
-  });
+    popup.style.display = 'flex';
+    console.log("Popup opened with details:", { product, price, payLink, baridiMobLink, usdtLink });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        alert("Please sign in to make a purchase.");
+        console.log("User not signed in");
+      } else {
+        console.log("User is signed in:", user.uid);
+      }
+    });
+  } else {
+    console.error("Payment popup element not found.");
+  }
+}
+
+window.closePopup = function() {
+  const popup = document.getElementById('payment-popup');
+  if (popup) {
+    popup.style.display = 'none';
+    console.log("Popup closed");
+  } else {
+    console.error("Payment popup element not found.");
+  }
+}
+
+window.handlePayment = async function(method) {
+  const product = window.currentProduct;
+  const price = window.currentPrice;
+
+  if (!product || !price) {
+    alert("Product or price information is missing.");
+    console.log("Product or price missing.");
+    return;
+  }
+
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please sign in to make a purchase.");
+      console.log("No user signed in");
+      return;
+    }
+
+    const userId = user.uid;
+    const ordersCollection = collection(db, 'orders');
+    const orderRef = doc(ordersCollection); // Create a new document reference
+
+    console.log("Creating order with details:", {
+      product,
+      price,
+      userId,
+      status: false, // Set status to false initially
+      date: serverTimestamp(),
+      orderId: orderRef.id,
+      Your_Item: "Your Item Will Be Delivered Here"
+    });
+
+    // Save the order to Firestore
+    await setDoc(orderRef, {
+      product,
+      price,
+      userId,
+      status: false, // Set status to false initially
+      date: serverTimestamp(),
+      orderId: orderRef.id,
+      Your_Item: "Your Item Will Be Delivered Here"
+    });
+
+    console.log("Order saved to Firestore successfully");
+
+    // Redirect based on payment method
+    if (method === 'paypal') {
+      window.open(window.currentPayLink, '_blank');
+    } else if (method === 'baridimob') {
+      window.open(window.currentBaridiMobLink, '_blank');
+    } else if (method === 'usdt') {
+      window.open(window.currentUsdtLink, '_blank');
+    }
+
+    // Close the popup after redirection
+    closePopup();
+  } catch (error) {
+    console.error("Error handling payment or saving order:", error);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const signOutButton = document.createElement('button');
+  signOutButton.textContent = 'Sign Out';
+  signOutButton.onclick = async () => {
+    try {
+      await signOut(auth);
+      console.log('User signed out successfully');
+    } catch (error) {
+      console.error('Sign-out error:', error);
+    }
+  };
+
+  const authStateListener = (user) => {
+    if (user) {
+      document.body.appendChild(signOutButton);
+      console.log("User is signed in:", user.uid);
+    } else {
+      document.body.removeChild(signOutButton);
+      console.log("User is signed out");
+    }
+  };
+
+  onAuthStateChanged(auth, authStateListener);
 });
 
-const initOverlayCard = (cardEl) => {
-  const overlayCard = document.createElement("div");
-  overlayCard.classList.add("card");
-  createOverlayCta(overlayCard, cardEl.lastElementChild);
-  overlay.append(overlayCard);
-  observer.observe(cardEl);
-};
 
-cards.forEach(initOverlayCard);
-document.body.addEventListener("pointermove", applyOverlayMask);
-
-
-
-
-
-function openPopup() {
-  document.getElementById('payment-popup').style.display = 'block';
-}
-
-function closePopup() {
-  document.getElementById('payment-popup').style.display = 'none';
-}

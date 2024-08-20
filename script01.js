@@ -35,9 +35,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 console.log("Script loaded"); // Check if the script is running
-
-
-
-
-
-
